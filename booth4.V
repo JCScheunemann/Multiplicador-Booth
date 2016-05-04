@@ -18,7 +18,7 @@
 //    2.a2 feb 03 2016  Marlon   consertando erros que ficaram pra traz, versao quase full      //
 //    2.a3 apr 07 2016  Mateus   debug e sugestoes                                              //
 //    2.0  apr 08 2016  Marlon   correcoes versao quase full2                                   //
-//    2.a5 apr 08 2016  Jean     correcoes versao quase full3                                   //
+//    2.a5 may 04 2016  Jean     correcoes versao quase full3                                   //
 //                                        //
 //                                        //
 //                                        //
@@ -79,7 +79,7 @@ reg  [TAM+TAM-1:0] P      [0:(TAM>>1)-1];  // auxiliar somas parciais TAM/2 nume
   assign doisMD = MD+MD;                         // duas vezes MD
   assign menos2MD = ~(doisMD) + 1;               // comp2 de 2MD
   
-  assign S       = Spar[(TAM>>1)-1];             //saida eh ultima soma de parciais 
+  assign S       = Spar[(TAM>>1)];             //saida eh ultima soma de parciais 
   assign Spar[0] = {TAM+TAM{1'b0}};              // informacao zeros, primeira soma   
   
 //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH algoritmo booth HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
@@ -87,7 +87,7 @@ genvar I;
 generate        
         for (I=1; I<TAM+1 ; I=I+2) begin: booth      //radix 2, soma TAM/2 vezes; 0, 2, 4,8... 
          always @(*) begin  
-				$display("passagens pelo For I ",I);
+				//$display("passagens pelo For I ",I);
                  flag [(I>>1)] = ~(~(MR[I] & MR[I-1] & MR[I+1])&(MR[I] | MR[I-1] | MR[I+1]));//flag de igualdade 
                  xor1 [(I>>1)] = (MR[I] ^ MR[I-1]);             //selecionara se eh +-md ou +-2md
                  beta [(I>>1)] = MR[I+1] ?  menosMD  : MD ;     //calcula paralelamente se eh +-md ou +-2md                     

@@ -14,7 +14,7 @@ module tb_multipliers;
 // Defining parameters size 
  localparam integer PERIOD   = 10;   //clk period
   parameter integer 
-        TAM       = 4  ,             // bits size of operators 
+        TAM       = 16  ,             // bits size of operators 
         NULO      =  0 ,             // zero
         UM_POS    =  1 ,             // one
         UM_NEG    =  2 ,             // minus one
@@ -27,7 +27,7 @@ module tb_multipliers;
   reg signed [TAM-1:0] B ;
 
 // outputs to the DUT
-  wire [TAM*2-1:0] S;
+  wire signed [TAM*2-1:0] S;
   
 // local internal signals
   reg           clk;
@@ -40,7 +40,7 @@ module tb_multipliers;
         ZERO    = {(TAM*2-1){1'b0}},              //- zero -> 0...16'b0000 
         POS_ONE = {ZERO,1'b1},              // 1 -> one ... 16'b0001
         NEG_ONE = {(TAM*2){1'b1}};               // -1 -> minus one...16'hFFFF
-  reg [TAM*2-1:0] S_test ;                // result of multiplicaton test
+  reg signed [TAM*2-1:0] S_test ;                // result of multiplicaton test
   
 // Multiplier instantiation
 /*booth4*/booth4 #(.TAM(TAM))DUT  (                   // replace "array_m2_vector" by the entity name in VHDL
@@ -128,31 +128,33 @@ module tb_multipliers;
   NULO   :  if (S !== 0 || S !== S_test )
               begin 
 				message = "***** Expected zero ***** MULTIPLIER TEST FAILED ";
-			   $display(S," | ",S_test);
+			   $display($time,S," | ",S_test);
 				end
             else 
               message = " MULTIPLIER ZERO TEST PASSED ";
 
   UM_POS :  if ( S !== 1 || S !== S_test ) begin
               message = "***** Expected  one ****** MULTIPLIER TEST FAILED ";
-			  $display(S," | ",S_test);
+			  $display($time,S," | ",S_test);
 			  end
             else 
               message = " MULTIPLIER ONE TEST PASSED ";
 
   UM_NEG  : if ( S !== {(TAM*2){1'b1}} || S !== S_test ) begin
               message = "***** Expected minus one ***** MULTIPLIER TEST FAILED";
-			   $display(S," | ",S_test);
+			   $display($time,S," | ",S_test);
 			   end
             else
               message = " MULTIPLIER MINUS ONE TEST PASSED ";
 
   ALEATORIO : if ( S !== S_test ) begin
                 message = "***** RANDOM NUMBERS ***** TEST FAILED ";
-				 $display(S," | ",S_test);
+				 $display("xxxxxxxxxxxxxxxxxxxxx",$time," ",S," | ",S_test);
 				 end
-              else  
+              else begin 
                 message = " MULTIPLIER RANDOM TEST PASSED ";
+				//$display(">>>>>>>>>Passou ",$time,"::::: ",A,"*",B," = ",S," | ",S_test);
+				end
   
   default: message = " MULTIPLIER BASIC TEST PASSED ";
 
