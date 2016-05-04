@@ -57,13 +57,13 @@ wire [TAM-1:0]     A;
 wire [TAM-1:0]     B;
 wire [TAM+TAM-1:0] S;                    // saida, parciais somados 
                                             
-reg  [(TAM>>1)-1:0] flag ;  // se bit em questao sao iguais saida tera 0
-reg  [(TAM>>1)-1:0] xor1 ;  // selecionarah se eh +-md ou +-2md
-reg [TAM+TAM-1:0] beta   [0:(TAM>>1)-1];  // MD ou menosMD
-reg [TAM+TAM-1:0] beta0  [0:(TAM>>1)-1];  // doisMD ou menos2MD
-reg [TAM+TAM-1:0] beta1  [0:(TAM>>1)-1];  // através de xor1 escolhe 2A ou A
-reg [TAM+TAM-1:0] beta2  [0:(TAM>>1)-1];  // através da flag escolhe beta1 e 0
-reg [TAM+TAM-1:0] beta3  [0:(TAM>>1)-1];  // desloca beta2
+wire  [(TAM>>1)-1:0] flag ;  // se bit em questao sao iguais saida tera 0
+wire  [(TAM>>1)-1:0] xor1 ;  // selecionarah se eh +-md ou +-2md
+wire [TAM+TAM-1:0] beta   [0:(TAM>>1)-1];  // MD ou menosMD
+wire [TAM+TAM-1:0] beta0  [0:(TAM>>1)-1];  // doisMD ou menos2MD
+wire [TAM+TAM-1:0] beta1  [0:(TAM>>1)-1];  // através de xor1 escolhe 2A ou A
+wire [TAM+TAM-1:0] beta2  [0:(TAM>>1)-1];  // através da flag escolhe beta1 e 0
+wire [TAM+TAM-1:0] beta3  [0:(TAM>>1)-1];  // desloca beta2
 	                                        
 wire [TAM+TAM-1:0] Spar   [0:(TAM>>1)];  // somas de parciais
 reg  [TAM+TAM-1:0] P      [0:(TAM>>1)-1];  // auxiliar somas parciais TAM/2 numero de somas     	
@@ -86,18 +86,18 @@ reg  [TAM+TAM-1:0] P      [0:(TAM>>1)-1];  // auxiliar somas parciais TAM/2 nume
 genvar I;
 generate        
         for (I=1; I<TAM+1 ; I=I+2) begin: booth      //radix 2, soma TAM/2 vezes; 0, 2, 4,8... 
-         always @(*) begin  
+      
 				//$display("passagens pelo For I ",I);
-                 flag [(I>>1)] = ~(~(MR[I] & MR[I-1] & MR[I+1])&(MR[I] | MR[I-1] | MR[I+1]));//flag de igualdade 
-                 xor1 [(I>>1)] = (MR[I] ^ MR[I-1]);             //selecionara se eh +-md ou +-2md
-                 beta [(I>>1)] = MR[I+1] ?  menosMD  : MD ;     //calcula paralelamente se eh +-md ou +-2md                     
-                 beta0[(I>>1)] = MR[I+1] ?  menos2MD : doisMD ; //calcula paralelamente se eh +-md ou +-2md
-                 beta1[(I>>1)] = xor1[I>>1] ? beta[(I>>1)] : beta0[(I>>1)]; //seleciona se eh +-md ou +-2md 
-                 beta2[(I>>1)] = flag[I>>1] ? 0 : beta1[(I>>1)] ;           //se todos iguais zera a parcial
-                 beta3[(I>>1)] = beta2[I>>1] << (I-1) ;                     //rotaciona i-1 vezes, segundo logica booth modificado, 
-                 P  [(I>>1)] = beta3[I>>1];  // atualiza valor da soma parcial no vetor P [1->1],[3->2],[5->3],...[15->8] 
+            assign flag [(I>>1)] = ~(~(MR[I] & MR[I-1] & MR[I+1])&(MR[I] | MR[I-1] | MR[I+1]));//flag de igualdade 
+            assign xor1 [(I>>1)] = (MR[I] ^ MR[I-1]);             //selecionara se eh +-md ou +-2md
+            assign beta [(I>>1)] = MR[I+1] ?  menosMD  : MD ;     //calcula paralelamente se eh +-md ou +-2md                     
+            assign beta0[(I>>1)] = MR[I+1] ?  menos2MD : doisMD ; //calcula paralelamente se eh +-md ou +-2md
+            assign beta1[(I>>1)] = xor1[I>>1] ? beta[(I>>1)] : beta0[(I>>1)]; //seleciona se eh +-md ou +-2md 
+            assign beta2[(I>>1)] = flag[I>>1] ? 0 : beta1[(I>>1)] ;           //se todos iguais zera a parcial
+            assign beta3[(I>>1)] = beta2[I>>1] << (I-1) ;                     //rotaciona i-1 vezes, segundo logica booth modificado, 
+            assign P  [(I>>1)] = beta3[I>>1];  // atualiza valor da soma parcial no vetor P [1->1],[3->2],[5->3],...[15->8] 
 
-          end   //*/                            
+                                    
         end
 endgenerate // final da geracao de parciais                                       
             //mux <= sel     ? iftrue : iffalse
